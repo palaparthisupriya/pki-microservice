@@ -29,12 +29,13 @@ A secure, enterprise-grade microservice for TOTP (Time-based One-Time Password) 
 ├── docker-compose.yml     # Volume and Port orchestration
 ├── requirements.txt       # Python dependencies
 └── README.md              # Project documentation
-## 🛠️ Installation & Setup1. Build and Start the ContainerBashdocker-compose up --build -d
+
+## Installation & Setup1. Build and Start the ContainerBashdocker-compose up --build -d
 2. Decrypt the Seed (Initialization)Before generating codes, initialize the service with your encrypted seed:Bashcurl -X POST http://localhost:8080/decrypt-seed \
 -H "Content-Type: application/json" \
 -d "{\"encrypted_seed\": \"YOUR_BASE64_ENCRYPTED_SEED\"}"
-##🔌 API EndpointsMethodEndpointDescriptionPOST/decrypt-seed Decrypts and saves the hex seed to /data/seed.txt.GET/generate-2fa
-Returns a 6-digit TOTP code and its remaining validity.
+##🔌 API EndpointsMethodEndpointDescriptionPOST/decrypt-seedDecrypts and saves the hex seed to /data/seed.txt.GET/generate-2faReturns a 6-digit TOTP code and its remaining validity.POST/verify-2faVerifies a 6-digit code against the stored seed.
+## 📊 Monitoring & PersistenceCron Logs: The service automatically logs a code every minute. Verify this at:docker-compose exec app cat /cron/last_code.txtPersistence Test: Restarting the container with docker-compose restart will not lose the decrypted seed, as it is stored in the seed-data named volume.🔒 Security SpecificationsAsymmetric Algorithm: RSA-OAEPHashing: SHA-256Mask Generation Function: MGF1 (SHA-256)Timezone: UTC (Internal Container Clock)TOTP Interval: 30 Seconds
 POST/verify-2faVerifies a 6-digit code against the stored seed.
 ## 📊 Monitoring & PersistenceCron Logs: The service automatically logs a code every minute. Verify this at:docker-compose exec app cat /cron/last_code.txtPersistence Test: Restarting the container with docker-compose restart will not lose the decrypted seed, as it is stored in the seed-data named volume.
 ##🔒 Security SpecificationsAsymmetric Algorithm:
